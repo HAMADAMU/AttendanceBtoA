@@ -1,0 +1,28 @@
+<%= provide(:title, @user.name) %>
+
+<div class="container">
+  <table class="table table-bordered table-condenced user-table">
+    <tr>
+      <td>時間管理表</td>
+      <td>指定勤務時間</td>
+      <td>基本時間</td>
+      <td>初日</td>
+    </tr>
+    <tr>
+      <td>所属</td>
+      <td>氏名</td>
+      <td>コード</td>
+      <td>出勤日数</td>
+      <td>締め</td>
+    </tr>
+  </table>
+  <%= link_to "勤怠を編集", '#', class: "btn" %>
+  
+  <table class="table table-bordered table-condenced">
+    <thead>
+      <tr>
+        <th></th>
+      </tr>
+    </thead>
+  </table>
+</div>
