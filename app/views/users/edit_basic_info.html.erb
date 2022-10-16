@@ -1,0 +1,20 @@
+<% provide(:title, "EditBasicInfo") %>
+
+<div class="container">
+  <h1>基本情報の更新</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <%= form_with(model: @users, local: true) do |f| %>
+        <%= render 'shared/error_messages' %>
+        
+        <%= f.label :work_time, class: "label-basic-info" %>
+        <%= f.time_field :work_time, class: "form-control" %>
+        
+        <%= f.label :basic_time, class: "label-basic-info" %>
+        <%= f.time_field :basic_time, class: "form-control" %>
+        
+        <%= f.submit "編集", class: "btn btn-block btn-primary btn-basic-info" %>
+      <% end %>
+    </div>
+  </div>
+</div>
