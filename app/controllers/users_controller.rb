@@ -3,14 +3,13 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:show, :edit, :update, :edit_basic_info, :update_basic_info]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :set_one_month, only: :show
   
   def index
     @users = User.paginate(page: params[:page])
   end
   
   def show
-    @first_day = Date.current.beginning_of_month
-    @last_day = @first_day.end_of_month
   end
   
   def new
@@ -51,14 +50,15 @@ class UsersController < ApplicationController
   
   def update_basic_info
     users = User.all
-    users.each do |user|
-      unless user.update_attributes(basic_info_params)
-        flash[:danger] = "#{user.name}の更新に失敗しました。"
-        render :edit_basic_info
-      end
+    ActiveRecord::Base.transaction do
+      users.each { |user| user.update_attributes(basic_info_params) }
     end
     flash[:success] = "全ユーザーの基本情報を更新しました。"
     redirect_to root_url
+      
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = "全ユーザーの基本情報の更新に失敗しました。"
+    render :edit_basic_info
   end
   
   private
