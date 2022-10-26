@@ -52,7 +52,7 @@ class UsersController < ApplicationController
   def update_basic_info
     users = User.all
     ActiveRecord::Base.transaction do
-      users.each { |user| user.update_attributes(basic_info_params) }
+      users.each { |user| user.update_attributes!(basic_info_params) }
     end
     flash[:success] = "全ユーザーの基本情報を更新しました。"
     redirect_to root_url
