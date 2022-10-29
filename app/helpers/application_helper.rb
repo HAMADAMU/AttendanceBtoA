@@ -8,4 +8,14 @@ module ApplicationHelper
       page_name + " | " + base_title
     end
   end
+  
+  def day_color(wday)
+    if wday == 0
+      "sunday"
+    elsif wday == 6
+      "saturday"
+    else
+      "weekday"
+    end
+  end
 end
