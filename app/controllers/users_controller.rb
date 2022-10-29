@@ -7,7 +7,13 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: :show
   
   def index
-    @users = User.paginate(page: params[:page])
+    if params[:search].present?
+      @users = User.where('name LIKE ?', "%#{params[:search]}%").paginate(page: params[:page]) if params[:search].present?
+      @h1_title = "検索結果"
+    else
+      @users = User.paginate(page: params[:page])
+      @h1_title = "全ユーザー一覧"
+    end
   end
   
   def show
