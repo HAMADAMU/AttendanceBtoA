@@ -61,7 +61,7 @@ GEM
     crass (1.0.6)
     erubi (1.11.0)
     execjs (2.8.1)
-    faker (2.22.0)
+    faker (2.23.0)
       i18n (>= 1.8.11, < 2)
     ffi (1.15.5)
     globalid (1.0.0)
@@ -202,4 +202,4 @@ DEPENDENCIES
   will_paginate
 
 BUNDLED WITH
-   1.17.3
+   2.1.4
