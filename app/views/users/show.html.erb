@@ -24,7 +24,9 @@
       <td>締め　<%= l(@last_day, format: :short) %></td>
     </tr>
   </table>
-  
+  <p>【所属長承認申請のお知らせ】</p>
+  <p>【勤怠変更申請のお知らせ】</p>
+  <p>【残業申請のお知らせ】</p>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-default btn-users-show btn-primary" %>
   <%= link_to "CSV出力", '#', class: "btn btn-default btn-users-show btn-primary" %><br>
   <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-default btn-users-show btn-primary" %>
@@ -89,20 +91,25 @@
           <td><%= day.note %></td>
           <td></td>
           <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
       <% end %>
     </tbody>
     
     <tfoot>
       <tr>
-        <td colspan="2">累計日数</td>
-        <td colspan="6">総合勤務時間</td>
-        <td colspan="2">累計在社時間</td>
-      </tr>
-      <tr>
-        <td colspan="2"><%= @attendances.count %></td>
-        <td colspan="6"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
-        <td colspan="2"><%= format("%.2f", @total_times.to_f) %></td>
+        <td></td>
+        <td colspan="2"></td>
+        <td colspan="6"></td>
+        <td>実装待ち</td>
+        <td colspan="5"></td>
+        <td>
+          所属長確認<br>
+
+          <%= link_to "申請", '#',class: "btn btn-default btn-primary" %>
+        </td>
       </tr>
     </tfoot>
   </table>
