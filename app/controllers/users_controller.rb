@@ -15,6 +15,10 @@ class UsersController < ApplicationController
       @h1_title = "全ユーザー一覧"
     end
   end
+
+  def index_of_working
+    @users = User.joins(:attendances).merge(Attendance.where(worked_on: Date.today).where.not(started_at: nil).where(finished_at: nil))
+  end
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil, finished_at: nil).count

@@ -1,0 +1,22 @@
+<% provide(:title, "working user") %>
+
+<div class="container">
+  <h1>出勤中社員一覧</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <table class="table table-bordered table-users">
+        <thead>
+          <th>社員番号</th>
+          <th>名前</th>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+            <tr>
+              <td><%= user.name %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
