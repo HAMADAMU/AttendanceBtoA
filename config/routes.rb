@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   get 'index_of_working', to: 'users#index_of_working'
+  post 'import', to: 'users#import'
   
   resources :users do
     member do
@@ -15,5 +16,7 @@ Rails.application.routes.draw do
     end
     resources :attendances, only: :update
   end
+
+  resources :bases
 
 end

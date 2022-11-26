@@ -1,13 +1,13 @@
 # coding: utf-8
 
-User.create!( name: "admin-user",
+User.create!( name: "管理者",
               email: "admin@email.com",
               password: "password",
               password_confirmation: "password",
               admin: true
               )
 
-User.create!( name: "boss-user",
+User.create!( name: "上長",
               email: "boss@email.com",
               password: "password",
               password_confirmation: "password",

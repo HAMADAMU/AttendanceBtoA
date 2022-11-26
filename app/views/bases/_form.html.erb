@@ -1,0 +1,13 @@
+<%= form_with(model: @base, local: true) do |f| %>
+  
+  <%= f.label :number, class: "label-bases" %>
+  <%= f.number_field :number, class: "form-control" %>
+  
+  <%= f.label :name, class: "label-bases" %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%= f.label :attend, class: "label-bases" %>
+  <%= f.text_field :attend, class: "form-control" %>
+
+  <%= f.submit "拠点情報を#{yield(:bases_button)}", class: "btn btn-block btn-primary" %>
+<% end %>

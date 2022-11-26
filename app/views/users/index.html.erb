@@ -12,7 +12,7 @@
       <% end %>
     </div>
 
-    <%= form_with(model: @user, local: true) do |f| %>
+    <%= form_with url: import_path, local: true do |f| %>
       <%= f.file_field "ファイルを選択" %>
       <%= f.submit "CSVをインポート", class: "btn btn-lg btn-primary" %>
     <% end %>
@@ -23,30 +23,65 @@
       
         <table class="table table-condenced table-hover" id="table-users">
           <% @users.each do |user| %>
-            <tr>
-              <td><%= link_to user.name, user %></td>
-            </tr>
-            <tr>
-              <td>
-                <% if current_user.admin? && !current_user?(user) %>
+            <% if current_user.admin? && !current_user?(user) %>
+              <tr>
+                <td><%= user.name %></td>
+              </tr>
+              <tr>
+                <td>
+
                   <%= link_to "削除", user, method: :delete,
                   data: { confirm: "削除してよろしいですか？" },
                   class: "btn btn-primary" %>
-                <% end %>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <button type="button" class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse<%= user.id %>">編集</button>
-                <div id="collapse<%= user.id %>" class="collapse">
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-                      <p>form_withの実装</p>
+                
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button type="button" class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse<%= user.id %>">編集</button>
+                  <div id="collapse<%= user.id %>" class="collapse">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <%= form_with(model: user, local: true) do |f| %>
+  
+                          <%= f.label :name, class: "label-index" %>
+                          <%= f.text_field :name, class: "form-control" %>
+  
+                          <%= f.label :email, class: "label-index" %>
+                          <%= f.email_field :email, class: "form-control" %>
+  
+                          <%= f.label :department, class: "label-index" %>
+                          <%= f.text_field :department, class: "form-control" %>
+  
+                          <%= f.label :password, class: "label-index" %>
+                          <%= f.password_field :password, class:"form-control" %>
+  
+                          <%= f.label :password_confirmation, class: "label-index" %>
+                          <%= f.password_field :password_confirmation, class: "form-control" %>
+
+                          <%= f.label :employee_number, class: "label-index" %>
+                          <%= f.text_field :employee_number, class: "form-control" %>
+
+                          <%= f.label :uid, class: "label-index" %>
+                          <%= f.text_field :uid, class: "form-control" %>
+
+                          <%= f.label :basic_time, class: "label-index" %>
+                          <%= f.time_field :basic_time, class: "form-control" %>
+
+                          <%= f.label :work_time, class: "label-index" %>
+                          <%= f.time_field :work_time, class: "form-control" %>
+
+                          <%= f.label :end_time, class: "label-index" %>
+                          <%= f.time_field :end_time, class: "form-control" %>
+  
+                          <%= f.submit "編集", class: "btn btn-block btn-primary btn-index" %>
+                        <% end %>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </td>
-            </tr>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
         </table>
       <% will_paginate %>

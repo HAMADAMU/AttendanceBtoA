@@ -1,0 +1,40 @@
+<% provide(:title, "base") %>
+<% provide(:bases_button, "追加") %>
+
+<div class="container">
+  <h1>拠点一覧</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <table class="table table-condenced table-bordered table-hover" id="table-bases">
+        <thead>
+          <th></th>
+          <th></th>
+          <th>拠点番号</th>
+          <th>拠点名</th>
+          <th>勤怠種類</th>
+        </thead>
+        <tbody>
+          <% @bases.each do |base| %>
+            <tr>
+              <td>
+                <%= link_to "修正", edit_basis_path(base), class: "btn btn-md btn-primary" %>
+              </td>
+              <td>削除ボタン</td>
+              <td><%= base.number %></td>
+              <td><%= base.name %></td>
+              <td><%= base.attend %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-base">拠点情報追加</button>
+      <div id="collapse-base" class="collapse">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <p><%= render 'form' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

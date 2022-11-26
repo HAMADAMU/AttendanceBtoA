@@ -1,0 +1,7 @@
+<% provide(:title, @base.name) %>
+<% provide(:bases_button, "修正") %>
+
+<div class="container">
+  <h1><%= @base.name %>の情報修正</h1>
+  <%= render 'form' %>
+</div>
