@@ -8,10 +8,10 @@ User.create!( name: "管理者",
               )
 
 User.create!( name: "上長",
-              email: "boss@email.com",
+              email: "superior@email.com",
               password: "password",
               password_confirmation: "password",
-              boss: true
+              superior: true
               )
               
 5.times do |n|

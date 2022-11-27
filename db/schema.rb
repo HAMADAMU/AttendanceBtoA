@@ -40,13 +40,13 @@ ActiveRecord::Schema.define(version: 20221126135345) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
-    t.string "department"
-    t.datetime "basic_time", default: "2022-11-25 23:00:00"   # 基本時間
-    t.datetime "work_time", default: "2022-11-26 00:00:00"    # 指定勤務開始時間
-    t.datetime "end_time", default: "2022-11-26 09:00:00"     # 指定勤務終了時間
-    t.boolean "boss", default: false
-    t.integer "employee_number"                               # 社員番号
-    t.integer "uid"                                           # カードID
+    t.string "affiliation"
+    t.datetime "basic_work_time", default: "2022-11-27 23:00:00"
+    t.datetime "designated_work_start_time", default: "2022-11-28 00:00:00"
+    t.datetime "designated_work_end_time", default: "2022-11-28 09:00:00"
+    t.boolean "superior", default: false
+    t.integer "employee_number"
+    t.integer "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

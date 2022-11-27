@@ -13,7 +13,7 @@
     </div>
 
     <%= form_with url: import_path, local: true do |f| %>
-      <%= f.file_field "ファイルを選択" %>
+      <%= f.file_field :file %>
       <%= f.submit "CSVをインポート", class: "btn btn-lg btn-primary" %>
     <% end %>
 
@@ -50,8 +50,8 @@
                           <%= f.label :email, class: "label-index" %>
                           <%= f.email_field :email, class: "form-control" %>
   
-                          <%= f.label :department, class: "label-index" %>
-                          <%= f.text_field :department, class: "form-control" %>
+                          <%= f.label :affiliation, class: "label-index" %>
+                          <%= f.text_field :affiliation, class: "form-control" %>
   
                           <%= f.label :password, class: "label-index" %>
                           <%= f.password_field :password, class:"form-control" %>
@@ -65,14 +65,14 @@
                           <%= f.label :uid, class: "label-index" %>
                           <%= f.text_field :uid, class: "form-control" %>
 
-                          <%= f.label :basic_time, class: "label-index" %>
-                          <%= f.time_field :basic_time, class: "form-control" %>
+                          <%= f.label :basic_work_time, class: "label-index" %>
+                          <%= f.time_field :basic_work_time, class: "form-control" %>
 
-                          <%= f.label :work_time, class: "label-index" %>
-                          <%= f.time_field :work_time, class: "form-control" %>
+                          <%= f.label :designated_work_start_time, class: "label-index" %>
+                          <%= f.time_field :designated_work_start_time, class: "form-control" %>
 
-                          <%= f.label :end_time, class: "label-index" %>
-                          <%= f.time_field :end_time, class: "form-control" %>
+                          <%= f.label :designated_work_end_time, class: "label-index" %>
+                          <%= f.time_field :designated_work_end_time, class: "form-control" %>
   
                           <%= f.submit "編集", class: "btn btn-block btn-primary btn-index" %>
                         <% end %>
