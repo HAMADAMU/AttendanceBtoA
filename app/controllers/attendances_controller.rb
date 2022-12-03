@@ -63,7 +63,8 @@ class AttendancesController < ApplicationController
   end
 
   def edit_overtime_approval
-    @attendances = Attendance.where(overtime_request: "申請中").where(overtime_superior: @user.name).order(:user_id).order(:worked_on).group_by {|a| a.user_id}
+    @users = User.joins(:attendances).merge(Attendance.where(overtime_superior: @user.name)).group(:user_id)
+    # @attendances = Attendance.where(overtime_request: "申請中").where(overtime_superior: @user.name).order(:user_id).order(:worked_on)
   end
 
   def update_overtime_approval
