@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -44,11 +44,38 @@ class AttendancesController < ApplicationController
   end
 
   def edit_overtime
+    @user = User.find_by(id: params[:user_id])
+    @attendance = @user.attendances.find(params[:id])
+    @superiors = User.where(superior: true)
+  end
+
+  def update_overtime
+    @user = User.find_by(id: params[:user_id])
+    @attendance = @user.attendances.find(params[:id])
+    if @attendance.update_attributes(overtime_params)
+      @attendance.overtime_request = "申請中"
+      @attendance.save
+      flash[:success] = "残業申請しました。"
+    else
+      flash[:danger] = "残業申請に失敗しました。"
+    end
+    redirect_to @user
+  end
+
+  def edit_overtime_approval
+    @attendances = Attendance.where(overtime_request: "申請中").where(overtime_superior: @user.name).order(:user_id).order(:worked_on).group_by {|a| a.user_id}
+  end
+
+  def update_overtime_approval
   end
   
   private
     
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    end
+
+    def overtime_params
+      params.require(:attendance).permit(:end_plan_time, :next_day, :overtime_note, :overtime_superior)
     end
 end

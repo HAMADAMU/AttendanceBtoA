@@ -25,9 +25,18 @@
     </tr>
   </table>
   <% if @user.superior? %>
-    <p>【所属長承認申請のお知らせ】</p>
-    <p>【勤怠変更申請のお知らせ】</p>
-    <p>【残業申請のお知らせ】</p>
+    <p>
+      <%= link_to "【所属長承認申請のお知らせ】", '#' %>
+    </p>
+    <p>
+      <%= link_to "【勤怠変更申請のお知らせ】", '#' %>
+    </p>
+    <p>
+      <%= link_to "【残業申請のお知らせ】", attendances_edit_overtime_approval_user_path(@user), remote: true %>
+      <% if attendance = Attendance.where(overtime_request: "申請中").where(overtime_superior: current_user.name) %>
+        <%= attendance.count %>件の通知があります。
+      <% end %>
+    </p>
   <% end %>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-default btn-users-show btn-primary" %>
   <%= link_to "CSV出力", '#', class: "btn btn-default btn-users-show btn-primary" %><br>
@@ -118,3 +127,4 @@
 </div>
 
 <div id="edit-overtime" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-overtime-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

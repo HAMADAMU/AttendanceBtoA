@@ -1,0 +1,16 @@
+<% provide(:title, "残業承認") %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      <% @attendances.each do |attendance| %>
+        <% attendance.each do |a| %>
+          <%= a.worked_on %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
