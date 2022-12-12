@@ -51,4 +51,8 @@ class ApplicationController < ActionController::Base
       redirect_to(root_url)
     end  
   end
+
+  def set_superiors
+    @superiors = User.where(superior: true).where.not(id: @user.id)
+  end
 end

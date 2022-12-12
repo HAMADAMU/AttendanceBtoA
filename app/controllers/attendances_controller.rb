@@ -3,6 +3,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
+  before_action :set_superiors, only: [:edit_one_month, :update_one_month]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -20,6 +21,7 @@ class AttendancesController < ApplicationController
         flash[:info] = "お疲れさまでした。"
       else
         flash[:danger] = UPDATE_ERROR_MSG
+        debugger
       end
     end
     redirect_to @user
@@ -33,6 +35,11 @@ class AttendancesController < ApplicationController
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
         attendance.attributes = item
+        if item[:edit_approval_superior].present?
+          attendance.attendance_edit_request = "申請中"
+          attendance.original_started_at = attendance.started_at
+          attendance.original_finished_at = attendance.finished_at
+        end
         attendance.save!(context: :update_one)  # この時だけon: :update_oneになっているバリデーションを実行する、save!で例外発生させてrescueに渡す
       end
     end
@@ -45,8 +52,8 @@ class AttendancesController < ApplicationController
 
   def edit_overtime
     @user = User.find_by(id: params[:user_id])
+    @superiors = User.where(superior: true).where.not(id: @user.id)
     @attendance = @user.attendances.find(params[:id])
-    @superiors = User.where(superior: true)
   end
 
   def update_overtime
@@ -64,19 +71,31 @@ class AttendancesController < ApplicationController
 
   def edit_overtime_approval
     @users = User.joins(:attendances).merge(Attendance.where(overtime_superior: @user.name)).group(:user_id)
-    # @attendances = Attendance.where(overtime_request: "申請中").where(overtime_superior: @user.name).order(:user_id).order(:worked_on)
   end
 
   def update_overtime_approval
+    overtime_approval_params.each do |id, item|
+      if item[:overtime_change] == "1"
+        attendance = Attendance.find(id)
+        attendance.overtime_request = item[:overtime_request]
+        attendance.overtime_superior = "なし"
+        attendance.save!
+      end
+    end
+    redirect_to @user
   end
   
   private
     
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :edit_approval_superior])[:attendances]
     end
 
     def overtime_params
       params.require(:attendance).permit(:end_plan_time, :next_day, :overtime_note, :overtime_superior)
+    end
+
+    def overtime_approval_params
+      params.require(:user).permit(attendances: [:overtime_request, :overtime_change])[:attendances]
     end
 end

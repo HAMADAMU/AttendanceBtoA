@@ -26,15 +26,20 @@
   </table>
   <% if @user.superior? %>
     <p>
-      <%= link_to "【所属長承認申請のお知らせ】", '#' %>
+      【所属長承認申請のお知らせ】<%= link_to "#", '#' %>
     </p>
     <p>
-      <%= link_to "【勤怠変更申請のお知らせ】", '#' %>
+      【勤怠変更申請のお知らせ】
+      <% edit_attendance = Attendance.where(attendance_edit_request: "申請中").where(edit_approval_superior: current_user.name) %>
+      <% if edit_attendance.present?%>
+        <%= link_to "#{edit_attendance.count}件の通知があります。", remote: true %>
+      <% end %>
     </p>
     <p>
-      <%= link_to "【残業申請のお知らせ】", attendances_edit_overtime_approval_user_path(@user), remote: true %>
-      <% if attendance = Attendance.where(overtime_request: "申請中").where(overtime_superior: current_user.name) %>
-        <%= attendance.count %>件の通知があります。
+      【残業申請のお知らせ】
+      <% overtime_attendance = Attendance.where(overtime_request: "申請中").where(overtime_superior: current_user.name)%>
+      <% if overtime_attendance.present? %>
+        <%= link_to "#{overtime_attendance.count}件の通知があります。", attendances_edit_overtime_approval_user_path(@user), remote: true %>
       <% end %>
     </p>
   <% end %>
@@ -100,11 +105,18 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td><%= day.end_plan_time.hour if day.end_plan_time.present? %></td>
+          <td><%= day.end_plan_time.min if day.end_plan_time.present? %></td>
+          <td><%= overtime_work(@user.designated_work_end_time, day.end_plan_time) if day.end_plan_time.present? %></td>
+          <td><%= day.overtime_note if day.overtime_note.present? %></td>
+          <td>
+            <% if day.overtime_request.present? && (day.overtime_request != "なし") %>
+              残業<%= day.overtime_request %>
+            <% end %>
+            <% if day.attendance_edit_request.present? && (day.attendance_edit_request != "なし") %>
+              勤怠編集<%= day.attendance_edit_request %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
@@ -118,8 +130,10 @@
         <td colspan="5"></td>
         <td>
           所属長確認<br>
-
-          <%= link_to "申請", '#',class: "btn btn-default btn-primary" %>
+          <%= form_with model: @user, url: '#',local: true do |f| %>
+            <%= f.collection_select :attendance_approval_superior, @superiors, :name, :name , { prompt: "選択" } %>
+            <%= f.submit "申請", class: "btn btn-default btn-primary" %>
+          <% end %>
         </td>
       </tr>
     </tfoot>

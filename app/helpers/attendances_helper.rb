@@ -1,8 +1,4 @@
 module AttendancesHelper
-  def working_times(start, finish)
-    format("%.2f", (((finish - start) / 60 ) / 60.0))
-  end
-  
   def times_15_min_round_up(time)
     if time < 15
       time = 0

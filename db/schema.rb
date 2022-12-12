@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20221201134750) do
+ActiveRecord::Schema.define(version: 20221212062938) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -20,11 +20,16 @@ ActiveRecord::Schema.define(version: 20221201134750) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "end_plan_time"
+    t.time "end_plan_time"
     t.boolean "next_day"
     t.string "overtime_note"
     t.string "overtime_request"
     t.string "overtime_superior"
+    t.string "overtime_change"
+    t.string "edit_approval_superior"
+    t.string "attendance_edit_request"
+    t.datetime "original_started_at"
+    t.datetime "original_finished_at"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -46,9 +51,9 @@ ActiveRecord::Schema.define(version: 20221201134750) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2022-12-03 23:00:00"
-    t.datetime "designated_work_start_time", default: "2022-12-04 00:00:00"
-    t.datetime "designated_work_end_time", default: "2022-12-04 09:00:00"
+    t.time "basic_work_time", default: "2000-01-01 23:00:00"
+    t.time "designated_work_start_time", default: "2000-01-01 00:00:00"
+    t.time "designated_work_end_time", default: "2000-01-01 09:00:00"
     t.boolean "superior", default: false
     t.integer "employee_number"
     t.integer "uid"

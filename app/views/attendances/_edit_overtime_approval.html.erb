@@ -10,7 +10,7 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-md-12">
-          <%= form_with model: @attendance, url: attendances_update_overtime_approval_user_path, local: true do |f| %>
+          <%= form_with model: @user, url: attendances_update_overtime_approval_user_path(@user), local: true, method: :patch do |f| %>
             <% @users.each do |user|%>
               <table class="table table-condenced table-bordered">
                 <h1 class="modal-title">【<%= user.name %>からの残業申請】</h1>
@@ -28,20 +28,21 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% attendance = user.attendances.where(overtime_request: "申請中").order(:worked_on) %>
-                  <% attendance.each do |a| %>  
-                    <%# fields_for %>
-                    <tr>
-                      <td><%= l(a.worked_on, format: :short) %></td>
-                      <td><%= $days_of_the_week[a.worked_on.wday] %></td>
-                      <td><%= l(a.end_plan_time, format: :time) %></td>
-                      <td><%= l(user.designated_work_end_time, format: :time) %></td>
-                      <td><%= working_times(user.designated_work_end_time, a.end_plan_time) %></td>
-                      <td><%= a.overtime_note %></td>
-                      <td>セレクトボックス</td>
-                      <td>チェックボックス</td>
-                      <td><%= link_to "確認", '#', class: "btn btn-primary btn-sm" %></td>
-                    </tr>
+                  <% attendances = user.attendances.where(overtime_request: "申請中").order(:worked_on) %>
+                  <% attendances.each do |attendance| %>  
+                    <%= f.fields_for "attendances[]", attendance do |a| %>
+                      <tr>
+                        <td><%= l(attendance.worked_on, format: :short) %></td>
+                        <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                        <td><%= l(attendance.end_plan_time, format: :time) %></td>
+                        <td><%= l(user.designated_work_end_time, format: :time) %></td>
+                        <td><%= working_times(user.designated_work_end_time, attendance.end_plan_time) %></td>
+                        <td><%= attendance.overtime_note %></td>
+                        <td><%= a.select :overtime_request, [["申請中", "申請中"], ["なし", "なし"], ["承認", "承認"], ["否認", "否認"]] %></td>
+                        <td><%= a.check_box :overtime_change %></td>
+                        <td><%= link_to "確認", '#', class: "btn btn-primary btn-sm" %></td>
+                      </tr>
+                    <% end %>
                   <% end %>
                 </tbody>
               </table>
