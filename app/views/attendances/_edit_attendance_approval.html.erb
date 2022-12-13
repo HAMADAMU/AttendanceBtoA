@@ -1,0 +1,76 @@
+<% provide(:title, "勤怠変更承認") %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <%= form_with model: @user, url: attendances_update_attendance_approval_user_path(@user), local: true, method: :patch do |f| %>
+            <% @users.each do |user|%>
+              <table class="table table-condenced table-bordered">
+                <h1 class="modal-title">【<%= user.name %>からの勤怠変更申請】</h1>
+                <thead>
+                  <tr>
+                    <th rowspan="3">日付</th>
+                    <th rowspan="3">曜日</th>
+                    <th colspan="4">変更前</th>
+                    <th colspan="4">変更後</th>
+                    <th rowspan="3">備考</th>
+                    <th rowspan="3">指示者確認㊞</th>
+                    <th rowspan="3">変更</th>
+                    <th rowspan="3">勤怠を確認する</th>
+                  </tr>
+                  <tr>
+                    <th colspan="2">出社</th>
+                    <th colspan="2">退社</th>
+                    <th colspan="2">出社</th>
+                    <th colspan="2">退社</th>
+                  </tr>
+                  <tr>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% attendances = user.attendances.where(attendance_edit_request: "申請中").order(:worked_on) %>
+                  <% attendances.each do |attendance| %>  
+                    <%= f.fields_for "attendances[]", attendance do |a| %>
+                      <tr>
+                        <td><%= l(attendance.worked_on, format: :short) %></td>
+                        <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                        <td><%= attendance.original_started_at.hour %></td>
+                        <td><%= attendance.original_started_at.min %></td>
+                        <td><%= attendance.original_finished_at.hour %></td>
+                        <td><%= attendance.original_finished_at.min %></td>
+                        <td><%= attendance.started_at.hour %></td>
+                        <td><%= attendance.started_at.min %></td>
+                        <td><%= attendance.finished_at.hour %></td>
+                        <td><%= attendance.finished_at.min %></td>
+                        <td><%= attendance.note %></td>
+                        <td><%= a.select :attendance_edit_request, [["申請中", "申請中"], ["なし", "なし"], ["承認", "承認"], ["否認", "否認"]] %></td>
+                        <td><%= a.check_box :attendance_edit_change %></td>
+                        <td><%= link_to "確認", user, class: "btn btn-primary btn-sm" %></td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+            <%= f.submit "変更を送信する", class: "btn btn-primary btn-lg" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

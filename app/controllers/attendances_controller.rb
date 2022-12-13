@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -11,13 +11,13 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     if @attendance.started_at.nil?
-      if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
+      if @attendance.update_attributes(started_at: Time.current.change(sec: 0), original_started_at: Time.current.change(sec: 0))
         flash[:info] = "おはようございます。"
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
     elsif @attendance.finished_at.nil?
-      if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
+      if @attendance.update_attributes(finished_at: Time.current.change(sec: 0), original_finished_at: Time.current.change(sec: 0))
         flash[:info] = "お疲れさまでした。"
       else
         flash[:danger] = UPDATE_ERROR_MSG
@@ -37,8 +37,6 @@ class AttendancesController < ApplicationController
         attendance.attributes = item
         if item[:edit_approval_superior].present?
           attendance.attendance_edit_request = "申請中"
-          attendance.original_started_at = attendance.started_at
-          attendance.original_finished_at = attendance.finished_at
         end
         attendance.save!(context: :update_one)  # この時だけon: :update_oneになっているバリデーションを実行する、save!で例外発生させてrescueに渡す
       end
@@ -84,6 +82,22 @@ class AttendancesController < ApplicationController
     end
     redirect_to @user
   end
+
+  def edit_attendance_approval
+    @users = User.joins(:attendances).merge(Attendance.where(edit_approval_superior: @user.name)).group(:user_id)
+  end
+
+  def update_attendance_approval
+    attendances_approval_params.each do |id, item|
+      if item[:attendance_edit_change] == "1"
+        attendance = Attendance.find(id)
+        attendance.attendance_edit_request = item[:attendance_edit_request]
+        attendance.edit_approval_superior = "なし"
+        attendance.save!
+      end
+    end
+    redirect_to @user
+  end
   
   private
     
@@ -91,8 +105,12 @@ class AttendancesController < ApplicationController
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :edit_approval_superior])[:attendances]
     end
 
+    def attendances_approval_params
+      params.require(:user).permit(attendances: [:attendance_edit_request, :attendance_edit_change])[:attendances]
+    end
+
     def overtime_params
-      params.require(:attendance).permit(:end_plan_time, :next_day, :overtime_note, :overtime_superior)
+      params.require(:attendance).permit(:end_plan_time, :overtime_next_day, :overtime_note, :overtime_superior)
     end
 
     def overtime_approval_params

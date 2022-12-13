@@ -32,7 +32,7 @@
       【勤怠変更申請のお知らせ】
       <% edit_attendance = Attendance.where(attendance_edit_request: "申請中").where(edit_approval_superior: current_user.name) %>
       <% if edit_attendance.present?%>
-        <%= link_to "#{edit_attendance.count}件の通知があります。", remote: true %>
+        <%= link_to "#{edit_attendance.count}件の通知があります。", attendances_edit_attendance_approval_user_path(@user), remote: true %>
       <% end %>
     </p>
     <p>
@@ -142,3 +142,4 @@
 
 <div id="edit-overtime" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overtime-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-attendance-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

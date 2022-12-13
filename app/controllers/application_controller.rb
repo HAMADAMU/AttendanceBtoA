@@ -52,6 +52,14 @@ class ApplicationController < ActionController::Base
     end  
   end
 
+  def superior_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.superior?
+      flash[:danger] = "権限がありません。"
+      redirect_to(root_url)
+    end  
+  end
+
   def set_superiors
     @superiors = User.where(superior: true).where.not(id: @user.id)
   end

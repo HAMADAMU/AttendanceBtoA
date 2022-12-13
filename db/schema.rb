@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20221212062938) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.time "end_plan_time"
-    t.boolean "next_day"
+    t.boolean "overtime_next_day"
     t.string "overtime_note"
     t.string "overtime_request"
     t.string "overtime_superior"
@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(version: 20221212062938) do
     t.string "attendance_edit_request"
     t.datetime "original_started_at"
     t.datetime "original_finished_at"
+    t.string "attendance_edit_change"
+    t.boolean "attendance_next_day"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
