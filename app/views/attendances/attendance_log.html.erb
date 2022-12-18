@@ -1,0 +1,48 @@
+<% provide(:title, @user.name) %>
+
+<div class="container">
+  <h1>勤怠ログ</h1>
+  <div class="row">
+    <%= form_with url: attendances_attendance_log_user_path(@user), method: :get, local: true do |f| %>
+      <%= f.month_field :month %>
+      <%= f.submit "検索", class: "btn btn-primary btn-sm" %>
+    <% end %>
+    <div class="col-md-6 col-md-offset-2">
+      <table class="table table-bordered table-condenced">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>変更前出社時間</th>
+            <th>変更前退社時間</th>
+            <th>変更後出社</th>
+            <th>変更後退社</th>
+            <th>指示者</th>
+            <th>承認日</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @attendances.each do |attendance| %>
+            <tr>
+              <td><%= l(attendance.worked_on, format: :short) %></td>
+              
+              <td>
+                <% if attendance.original_started_at.present? %>
+                  <%= l(attendance.original_started_at, format: :time) %>
+                <% end %>
+              </td>
+              <td>
+                <% if attendance.original_finished_at.present? %>
+                  <%= l(attendance.original_finished_at, format: :time) %>
+                <% end %>
+              </td>
+              <td><%= l(attendance.started_at, format: :time) %></td>
+              <td><%= l(attendance.finished_at, format: :time) %></td>
+              <td><%= attendance.edit_approval_superior %></td>
+              <td><%= l(attendance.edit_approval_day, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

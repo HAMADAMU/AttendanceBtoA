@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval, :attendance_log]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -93,10 +93,20 @@ class AttendancesController < ApplicationController
         attendance = Attendance.find(id)
         attendance.attendance_edit_request = item[:attendance_edit_request]
         attendance.edit_approval_superior = "なし"
+        attendance.edit_approval_day = Date.today
         attendance.save!
       end
     end
     redirect_to @user
+  end
+
+  def attendance_log
+    if params[:month].present?
+      first_day = (params[:month] + "-1").to_date
+      last_day = first_day.end_of_month
+      this_month = [first_day..last_day]
+    end
+    @attendances = @user.attendances.where(worked_on: this_month).where(attendance_edit_request: "承認")
   end
   
   private

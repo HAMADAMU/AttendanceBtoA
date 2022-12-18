@@ -49,10 +49,20 @@
                       <tr>
                         <td><%= l(attendance.worked_on, format: :short) %></td>
                         <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
-                        <td><%= attendance.original_started_at.hour %></td>
-                        <td><%= attendance.original_started_at.min %></td>
-                        <td><%= attendance.original_finished_at.hour %></td>
-                        <td><%= attendance.original_finished_at.min %></td>
+                        <% if attendance.original_started_at.present? %>
+                          <td><%= attendance.original_started_at.hour %></td>
+                          <td><%= attendance.original_started_at.min %></td>
+                        <% else %>
+                          <td></td>
+                          <td></td>
+                        <% end %>
+                        <% if attendance.original_finished_at.present? %>
+                          <td><%= attendance.original_finished_at.hour %></td>
+                          <td><%= attendance.original_finished_at.min %></td>
+                        <% else %>
+                          <td></td>
+                          <td></td>
+                        <% end %>
                         <td><%= attendance.started_at.hour %></td>
                         <td><%= attendance.started_at.min %></td>
                         <td><%= attendance.finished_at.hour %></td>

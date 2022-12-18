@@ -45,7 +45,7 @@
   <% end %>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-default btn-users-show btn-primary" %>
   <%= link_to "CSV出力", '#', class: "btn btn-default btn-users-show btn-primary" %><br>
-  <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-default btn-users-show btn-primary" %>
+  <%= link_to "勤怠修正ログ（承認済）", attendances_attendance_log_user_path, class: "btn btn-default btn-users-show btn-primary" %>
 
   
   <table class="table table-bordered table-condenced table-hover" id="table-attendances">

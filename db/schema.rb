@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20221212062938) do
     t.datetime "original_finished_at"
     t.string "attendance_edit_change"
     t.boolean "attendance_next_day"
+    t.date "edit_approval_day"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
