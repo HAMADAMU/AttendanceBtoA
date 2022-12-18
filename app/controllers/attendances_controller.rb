@@ -108,6 +108,23 @@ class AttendancesController < ApplicationController
     end
     @attendances = @user.attendances.where(worked_on: this_month).where(attendance_edit_request: "承認")
   end
+
+  def update_onemonth_request
+    @user = User.find(params[:user_id])
+    attendance = Attendance.find(params[:id])
+    if attendance.update_attributes(onemonth_request_params)
+      flash[:success] = "所属長承認申請しました。"
+    else
+      flash[:danger] = "所属長承認申請に失敗しました。"
+    end
+    redirect_to @user
+  end
+
+  def edit_onemonth_approval
+  end
+
+  def update_onemonth_approval
+  end
   
   private
     
@@ -125,5 +142,9 @@ class AttendancesController < ApplicationController
 
     def overtime_approval_params
       params.require(:user).permit(attendances: [:overtime_request, :overtime_change])[:attendances]
+    end
+
+    def onemonth_request_params
+      params.require(:attendance).permit(:onemonth_approval_superior, :onemonth_approval_request)
     end
 end

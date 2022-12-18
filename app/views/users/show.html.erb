@@ -130,8 +130,9 @@
         <td colspan="5"></td>
         <td>
           所属長確認<br>
-          <%= form_with model: @user, url: '#',local: true do |f| %>
-            <%= f.collection_select :attendance_approval_superior, @superiors, :name, :name , { prompt: "選択" } %>
+          <%= form_with model: @first_attendance, url: attendances_update_onemonth_request_user_attendance_path(@user, @first_attendance), local: true do |f| %>
+            <%= f.collection_select :onemonth_approval_superior, @superiors, :name, :name , { prompt: "選択" } %>
+            <%= f.hidden_field :onemonth_approval_request, :value => "申請中" %>
             <%= f.submit "申請", class: "btn btn-default btn-primary" %>
           <% end %>
         </td>

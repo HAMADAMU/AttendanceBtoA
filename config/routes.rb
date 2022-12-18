@@ -23,7 +23,9 @@ Rails.application.routes.draw do
       member do
         get 'attendances/edit_overtime'
         patch 'attendances/update_overtime'
-        get 'attendances/edit_attendance_approval'
+        patch 'attendances/update_onemonth_request'
+        get 'attendances/edit_onemonth_approval'
+        patch 'attendances/update_onemonth_approval'
       end
     end
   end

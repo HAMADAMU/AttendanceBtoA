@@ -23,6 +23,7 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil, finished_at: nil).count
+    @first_attendance = @attendances.find_by(worked_on: @first_day)
   end
   
   def new
