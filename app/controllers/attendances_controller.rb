@@ -1,7 +1,9 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval, :attendance_log]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval, :attendance_log, :edit_onemonth_approval, :update_onemonth_approval]
   before_action :logged_in_user, only: [:update, :edit_one_month]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :correct_user, only: [:edit_one_month, :update_one_month, :attendance_log]
+  before_action :superior_user, only: [:edit_overtime_approval, :update_overtime_approval, :edit_attendance_approval, :update_attendance_approval, :edit_onemonth_approval, :update_onemonth_approval]
+  before_action :not_admin_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_superiors, only: [:edit_one_month, :update_one_month]
   
@@ -121,9 +123,19 @@ class AttendancesController < ApplicationController
   end
 
   def edit_onemonth_approval
+    @users = User.joins(:attendances).merge(Attendance.where(onemonth_approval_superior: @user.name)).group(:user_id)
   end
 
   def update_onemonth_approval
+    onemonth_approval_params.each do |id, item|
+      if item[:onemonth_approval_change] == "1"
+        attendance = Attendance.find(id)
+        attendance.onemonth_approval_request = item[:onemonth_approval_request]
+        attendance.onemonth_approval_superior = "なし"
+        attendance.save!
+      end
+    end
+    redirect_to @user
   end
   
   private
@@ -146,5 +158,9 @@ class AttendancesController < ApplicationController
 
     def onemonth_request_params
       params.require(:attendance).permit(:onemonth_approval_superior, :onemonth_approval_request)
+    end
+
+    def onemonth_approval_params
+      params.require(:user).permit(attendances: [:onemonth_approval_request, :onemonth_approval_change])[:attendances]
     end
 end

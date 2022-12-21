@@ -5,7 +5,6 @@ class Attendance < ApplicationRecord
   validates :note, length: { maximum: 50 }
   validates :overtime_note, length: { maximum: 100 }
   
-  
   validate :finished_at_is_invalid_without_a_started_at
   validate :started_at_than_finished_at_fast_if_invalid
   validate :started_at_is_invalid_without_a_finished_at, on: :update_one

@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20221218130245) do
     t.string "attendance_edit_change"
     t.boolean "attendance_next_day"
     t.date "edit_approval_day"
-    t.string "onemonth_approval_request"
+    t.string "onemonth_approval_request", default: "未"
     t.string "onemonth_approval_superior"
     t.string "onemonth_approval_change"
     t.index ["user_id"], name: "index_attendances_on_user_id"

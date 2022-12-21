@@ -4,9 +4,13 @@
   <table class="table table-bordered table-condenced user-table">
     <tr>
       <td>
-        <%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-default btn-primary" %>
-         <%= l(@first_day, format: :middle) %>   時間管理表   
-        <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-default btn-primary" %>
+        <% if current_user?(@user) %>
+          <%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-default btn-primary" %>
+        <% end %>
+          <%= l(@first_day, format: :middle) %>   時間管理表   
+        <% if current_user?(@user) %>
+          <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-default btn-primary" %>
+        <% end %>
       </td>
       <td>
         指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %><br>
@@ -24,9 +28,13 @@
       <td>締め　<%= l(@last_day, format: :short) %></td>
     </tr>
   </table>
-  <% if @user.superior? %>
+  <% if @user.superior? && current_user?(@user) %>
     <p>
-      【所属長承認申請のお知らせ】<%= link_to "#", '#' %>
+      【所属長承認申請のお知らせ】
+      <% onemonth_attendance = Attendance.where(onemonth_approval_request: "申請中").where(onemonth_approval_superior: current_user.name) %>
+      <% if onemonth_attendance.present? %>
+        <%= link_to "#{onemonth_attendance.count}件の通知があります。", attendances_edit_onemonth_approval_user_path(@user), remote: true %>
+      <% end %>
     </p>
     <p>
       【勤怠変更申請のお知らせ】
@@ -43,9 +51,11 @@
       <% end %>
     </p>
   <% end %>
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-default btn-users-show btn-primary" %>
-  <%= link_to "CSV出力", '#', class: "btn btn-default btn-users-show btn-primary" %><br>
-  <%= link_to "勤怠修正ログ（承認済）", attendances_attendance_log_user_path, class: "btn btn-default btn-users-show btn-primary" %>
+  <% if current_user?(@user) %>
+    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-default btn-users-show btn-primary" %>
+    <%= link_to "CSV出力", user_path(@user, format: :csv), class: "btn btn-default btn-users-show btn-primary" %><br>
+    <%= link_to "勤怠修正ログ（承認済）", attendances_attendance_log_user_path, class: "btn btn-default btn-users-show btn-primary" %>
+  <% end %>
 
   
   <table class="table table-bordered table-condenced table-hover" id="table-attendances">
@@ -81,21 +91,29 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", attendances_edit_overtime_user_attendance_path(@user, day), remote: true, class: "btn btn-default btn-primary" %></td>
+          <td>
+            <% if current_user?(@user) %>
+              <%= link_to "残業申請", attendances_edit_overtime_user_attendance_path(@user, day), remote: true, class: "btn btn-default btn-primary" %>
+            <% end %>
+          </td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td class="<%= day_color(day.worked_on.wday) %>-color"><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td><%= day.started_at.hour if day.started_at.present? %></td>
           <td><%= times_15_min_round_up(day.started_at.min) if day.started_at.present? %></td>
           <td>
-            <% if (Date.current == day.worked_on) && day.started_at.nil? %>
-              <%= link_to "出勤登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
+            <% if current_user?(@user) %>
+              <% if (Date.current == day.worked_on) && day.started_at.nil? %>
+                <%= link_to "出勤登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
+              <% end %>
             <% end %>
           </td>
           <td><%= day.finished_at.hour if day.finished_at.present? %></td>
           <td><%= times_15_min_round_up(day.finished_at.min) if day.finished_at.present? %></td>
           <td>
-            <% if (Date.current == day.worked_on) && day.started_at.present? && day.finished_at.nil? %>
-              <%= link_to "退勤登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
+            <% if current_user?(@user) %>
+              <% if (Date.current == day.worked_on) && day.started_at.present? && day.finished_at.nil? %>
+                <%= link_to "退勤登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
+              <% end %>
             <% end %>
           </td>
           <td>
@@ -129,11 +147,12 @@
         <td>実装待ち</td>
         <td colspan="5"></td>
         <td>
-          所属長確認<br>
-          <%= form_with model: @first_attendance, url: attendances_update_onemonth_request_user_attendance_path(@user, @first_attendance), local: true do |f| %>
-            <%= f.collection_select :onemonth_approval_superior, @superiors, :name, :name , { prompt: "選択" } %>
-            <%= f.hidden_field :onemonth_approval_request, :value => "申請中" %>
-            <%= f.submit "申請", class: "btn btn-default btn-primary" %>
+          所属長確認 <%= @first_attendance.onemonth_approval_request %><br>
+          <% if current_user?(@user) %><%= form_with model: @first_attendance, url: attendances_update_onemonth_request_user_attendance_path(@user, @first_attendance), local: true do |f| %>
+            <%= f.collection_select :onemonth_approval_superior, @superiors, :name, :name , { prompt: "選択" } %><br>
+              <%= f.hidden_field :onemonth_approval_request, :value => "申請中" %>
+              <%= f.submit "申請", class: "btn btn-default btn-primary" %>
+            <% end %>
           <% end %>
         </td>
       </tr>
@@ -144,3 +163,4 @@
 <div id="edit-overtime" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overtime-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-attendance-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-onemonth-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
