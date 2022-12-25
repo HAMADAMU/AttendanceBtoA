@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20221218130245) do
+ActiveRecord::Schema.define(version: 20221221175914) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -64,6 +64,8 @@ ActiveRecord::Schema.define(version: 20221218130245) do
     t.integer "employee_number"
     t.integer "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["employee_number"], name: "index_users_on_employee_number", unique: true
+    t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
 end
