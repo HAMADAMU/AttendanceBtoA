@@ -36,6 +36,8 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
+        if item[:attendance_next_day] ==true
+        end
         attendance.attributes = item
         if item[:edit_approval_superior].present?
           attendance.attendance_edit_request = "申請中"
@@ -58,45 +60,69 @@ class AttendancesController < ApplicationController
 
   def update_overtime
     @user = User.find_by(id: params[:user_id])
-    @attendance = @user.attendances.find(params[:id])
-    if @attendance.update_attributes(overtime_params)
-      @attendance.overtime_request = "申請中"
-      @attendance.save
-      flash[:success] = "残業申請しました。"
+    if overtime_params[:end_plan_time].present? && overtime_params[:overtime_superior].present?
+      @attendance = @user.attendances.find(params[:id])
+      if @attendance.update_attributes(overtime_params)
+        @attendance.overtime_request = "申請中"
+        @attendance.save
+        flash[:success] = "残業申請しました。"
+      else
+        flash[:danger] = "残業申請に失敗しました。"
+      end
+    elsif overtime_params[:end_plan_time].blank? && overtime_params[:overtime_superior].present?
+      flash[:danger] = "終了予定時刻を入力してください。"
+    elsif overtime_params[:end_plan_time].present? && overtime_params[:overtime_superior].blank?
+      flash[:danger] = "上長を選択してください。"
     else
-      flash[:danger] = "残業申請に失敗しました。"
+      flash[:danger] = "終了予定時刻を入力し、上長を選択してください。"
     end
     redirect_to @user
   end
 
   def edit_overtime_approval
-    @users = User.joins(:attendances).merge(Attendance.where(overtime_superior: @user.name)).group(:user_id)
+    @users = User.joins(:attendances).merge(Attendance.where(overtime_superior: @user.name).where(overtime_request: "申請中")).group(:user_id)
   end
 
   def update_overtime_approval
     overtime_approval_params.each do |id, item|
       if item[:overtime_change] == "1"
         attendance = Attendance.find(id)
-        attendance.overtime_request = item[:overtime_request]
-        attendance.overtime_superior = "なし"
-        attendance.save!
+        if item[:overtime_request] == "なし"
+          attendance.end_plan_time = nil
+          attendance.overtime_next_day = nil
+          attendance.overtime_note = nil
+          attendance.overtime_superior = nil
+          attendance.overtime_request = nil
+          attendance.save
+        else
+          attendance.overtime_request = item[:overtime_request]
+          attendance.save
+        end
       end
     end
     redirect_to @user
   end
 
   def edit_attendance_approval
-    @users = User.joins(:attendances).merge(Attendance.where(edit_approval_superior: @user.name)).group(:user_id)
+    @users = User.joins(:attendances).merge(Attendance.where(edit_approval_superior: @user.name).where(attendance_edit_request: "申請中")).group(:user_id)
   end
 
   def update_attendance_approval
     attendances_approval_params.each do |id, item|
       if item[:attendance_edit_change] == "1"
         attendance = Attendance.find(id)
-        attendance.attendance_edit_request = item[:attendance_edit_request]
-        attendance.edit_approval_superior = "なし"
-        attendance.edit_approval_day = Date.today
-        attendance.save!
+        if item[:attendance_edit_request] == "なし"
+          attendance.started_at = attendance.original_started_at
+          attendance.finished_at = attendance.original_finished_at
+          attendance.note = nil
+          attendance.edit_approval_superior = nil
+          attendance.attendance_edit_request = "なし"
+          attendance.save
+        else
+          attendance.attendance_edit_request = item[:attendance_edit_request]
+          attendance.edit_approval_day = Date.today
+          attendance.save
+        end
       end
     end
     redirect_to @user
@@ -113,26 +139,35 @@ class AttendancesController < ApplicationController
 
   def update_onemonth_request
     @user = User.find(params[:user_id])
-    attendance = Attendance.find(params[:id])
-    if attendance.update_attributes(onemonth_request_params)
-      flash[:success] = "所属長承認申請しました。"
+    if onemonth_request_params[:onemonth_approval_superior].present?
+      attendance = Attendance.find(params[:id])
+      if attendance.update_attributes(onemonth_request_params)
+        flash[:success] = "所属長承認申請しました。"
+      else
+        flash[:danger] = "所属長承認申請に失敗しました。"
+      end
     else
-      flash[:danger] = "所属長承認申請に失敗しました。"
+      flash[:danger] = "上長を選択してください。"
     end
     redirect_to @user
   end
 
   def edit_onemonth_approval
-    @users = User.joins(:attendances).merge(Attendance.where(onemonth_approval_superior: @user.name)).group(:user_id)
+    @users = User.joins(:attendances).merge(Attendance.where(onemonth_approval_superior: @user.name).where(onemonth_approval_request: "申請中")).group(:user_id)
   end
 
   def update_onemonth_approval
     onemonth_approval_params.each do |id, item|
       if item[:onemonth_approval_change] == "1"
         attendance = Attendance.find(id)
-        attendance.onemonth_approval_request = item[:onemonth_approval_request]
-        attendance.onemonth_approval_superior = "なし"
-        attendance.save!
+        if item[:onemonth_approval_request] == "なし"
+          attendance.onemonth_approval_superior = nil
+          attendance.onemonth_approval_request = nil
+          attendance.save
+        else
+          attendance.onemonth_approval_request = item[:onemonth_approval_request]
+          attendance.save
+        end
       end
     end
     redirect_to @user
@@ -141,7 +176,7 @@ class AttendancesController < ApplicationController
   private
     
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :edit_approval_superior])[:attendances]
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note,:attendance_next_day, :edit_approval_superior])[:attendances]
     end
 
     def attendances_approval_params

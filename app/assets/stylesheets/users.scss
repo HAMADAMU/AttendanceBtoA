@@ -8,17 +8,6 @@
   margin-bottom: 10px;
 }
 
-#table-attendances {
-  th {
-    vertical-align: middle;
-    text-align: center;
-  }
-  td {
-    vertical-align: middle;
-    text-align: center;
-  }
-}
-
 .label-signup {
   margin-top: 5px;
 }
@@ -48,8 +37,12 @@
   margin-bottom: 20px;
 }
 
+.index-file {
+  margin: 2px 2px;
+}
+
 .user-index-btn {
-  
+  margin: 2px 2px;
 }
 
 .label-index {
@@ -89,4 +82,14 @@
 .btn-basic-info {
   margin: 15px 0;
   width: 30%;
+}
+
+.select-users {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.superior-notification {
+  color: red;
+  border: solid;
 }

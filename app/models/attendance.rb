@@ -8,6 +8,7 @@ class Attendance < ApplicationRecord
   validate :finished_at_is_invalid_without_a_started_at
   validate :started_at_than_finished_at_fast_if_invalid
   validate :started_at_is_invalid_without_a_finished_at, on: :update_one
+  # validate :end_plan_time_is_invalid_if_fast_than_designated_work_end_time
   
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です。") if started_at.blank? && finished_at.present?
@@ -15,11 +16,19 @@ class Attendance < ApplicationRecord
   
   def started_at_than_finished_at_fast_if_invalid
     if started_at.present? && finished_at.present?
-      errors.add(:started_at, "より早い退勤時間は無効です。") if started_at > finished_at
+      if (started_at > finished_at) && (attendance_next_day == false)
+        errors.add(:started_at, "より早い退勤時間は無効です。")
+      end
     end
   end
   
   def started_at_is_invalid_without_a_finished_at
-      errors.add(:finished_at, "が必要です。") if finished_at.blank? && started_at.present?
+    errors.add(:finished_at, "が必要です。") if finished_at.blank? && started_at.present?
   end
+
+  # def end_plan_time_is_invalid_if_fast_than_designated_work_end_time
+  #   if (end_plan_time < user.designated_work_end_time) && overtime_next_day == false
+  #     errors.add(:end_plan_time, "が不正な値です。")
+  #   end
+  # end
 end

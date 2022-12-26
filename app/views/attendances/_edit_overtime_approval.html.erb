@@ -12,7 +12,7 @@
         <div class="col-md-12">
           <%= form_with model: @user, url: attendances_update_overtime_approval_user_path(@user), local: true, method: :patch do |f| %>
             <% @users.each do |user|%>
-              <table class="table table-condenced table-bordered">
+              <table class="table table-condenced table-bordered table-hover" id="table-overtime-approval">
                 <h1 class="modal-title">【<%= user.name %>からの残業申請】</h1>
                 <thead>
                   <tr>
@@ -28,7 +28,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% attendances = user.attendances.where(overtime_request: "申請中").order(:worked_on) %>
+                  <% attendances = user.attendances.where(overtime_request: "申請中").where(overtime_superior: @user.name).order(:worked_on) %>
                   <% attendances.each do |attendance| %>  
                     <%= f.fields_for "attendances[]", attendance do |a| %>
                       <tr>

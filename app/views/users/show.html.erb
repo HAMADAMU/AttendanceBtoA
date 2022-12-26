@@ -30,24 +30,36 @@
   </table>
   <% if @user.superior? && current_user?(@user) %>
     <p>
-      【所属長承認申請のお知らせ】
       <% onemonth_attendance = Attendance.where(onemonth_approval_request: "申請中").where(onemonth_approval_superior: current_user.name) %>
       <% if onemonth_attendance.present? %>
-        <%= link_to "#{onemonth_attendance.count}件の通知があります。", attendances_edit_onemonth_approval_user_path(@user), remote: true %>
+        <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_onemonth_approval_user_path(@user), remote: true %>
+        <span class="superior-notification">
+          <%= onemonth_attendance.count %>件の通知があります。
+        </span>
+      <% else %>
+        【所属長承認申請のお知らせ】
       <% end %>
     </p>
     <p>
-      【勤怠変更申請のお知らせ】
       <% edit_attendance = Attendance.where(attendance_edit_request: "申請中").where(edit_approval_superior: current_user.name) %>
       <% if edit_attendance.present?%>
-        <%= link_to "#{edit_attendance.count}件の通知があります。", attendances_edit_attendance_approval_user_path(@user), remote: true %>
+        <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_attendance_approval_user_path(@user), remote: true %>
+        <span class="superior-notification">
+          <%= edit_attendance.count %>件の通知があります。
+        </span>
+      <% else %>
+        【勤怠変更申請のお知らせ】
       <% end %>
     </p>
     <p>
-      【残業申請のお知らせ】
       <% overtime_attendance = Attendance.where(overtime_request: "申請中").where(overtime_superior: current_user.name)%>
       <% if overtime_attendance.present? %>
-        <%= link_to "#{overtime_attendance.count}件の通知があります。", attendances_edit_overtime_approval_user_path(@user), remote: true %>
+        <%= link_to "【残業申請のお知らせ】", attendances_edit_overtime_approval_user_path(@user), remote: true %>
+        <span class="superior-notification">
+          <%= overtime_attendance.count %>件の通知があります。
+        </span>
+      <% else %>
+        【残業申請のお知らせ】
       <% end %>
     </p>
   <% end %>
@@ -118,7 +130,11 @@
           </td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <%= str_times = working_times(day.started_at, day.finished_at) %>
+              <% if day.attendance_next_day == true %>
+                <%= str_times = format("%.2f", working_times(day.started_at, day.finished_at).to_f + 24.0) %>
+              <% else %>
+                <%= str_times = working_times(day.started_at, day.finished_at) %>
+              <% end %>
               <% @total_times = @total_times.to_f + str_times.to_f %>
             <% end %>
           </td>
@@ -131,6 +147,7 @@
             <% if day.overtime_request.present? && (day.overtime_request != "なし") %>
               残業<%= day.overtime_request %>
             <% end %>
+            <br>
             <% if day.attendance_edit_request.present? && (day.attendance_edit_request != "なし") %>
               勤怠編集<%= day.attendance_edit_request %>
             <% end %>
@@ -144,12 +161,18 @@
         <td></td>
         <td colspan="2"></td>
         <td colspan="6"></td>
-        <td>実装待ち</td>
+        <td><%= @total_times %></td>
         <td colspan="5"></td>
         <td>
-          所属長確認 <%= @first_attendance.onemonth_approval_request %><br>
+          所属長確認<br>
+          <% if @first_attendance.onemonth_approval_request.present? %>
+            <%= @first_attendance.onemonth_approval_request %>
+          <% else %>
+            未
+          <% end %>
+          <br>
           <% if current_user?(@user) %><%= form_with model: @first_attendance, url: attendances_update_onemonth_request_user_attendance_path(@user, @first_attendance), local: true do |f| %>
-            <%= f.collection_select :onemonth_approval_superior, @superiors, :name, :name , { prompt: "選択" } %><br>
+            <%= f.collection_select :onemonth_approval_superior, @superiors, :name, :name , { prompt: "選択" }, class: "select-users" %><br>
               <%= f.hidden_field :onemonth_approval_request, :value => "申請中" %>
               <%= f.submit "申請", class: "btn btn-default btn-primary" %>
             <% end %>

@@ -3,7 +3,7 @@
 <div class="container">
   <h1>勤怠編集画面</h1>
   <div class="row">
-    <div class="col-md-6 col-md-offset-3">
+    <div class="col-md-10 col-md-offset-1">
       <%= form_with(model: @user, url: attendances_update_one_month_user_path(date: @first_day), local: true, method: :patch) do |f| %>
         <table class="table table-bordered table-condenced table-hover" id="table-attendances">
           <thead>
@@ -34,7 +34,11 @@
                   <td><%= attendance.check_box :attendance_next_day %></td>
                   <td>
                     <% if day.started_at.present? && day.finished_at.present? %>
-                      <%= working_times(day.started_at, day.finished_at) %>
+                      <% if day.attendance_next_day == true %>
+                        <%= format("%.2f", working_times(day.started_at, day.finished_at).to_f + 24.0) %>
+                      <% else %>
+                        <%= working_times(day.started_at, day.finished_at) %>
+                      <% end %>
                     <% end %>
                   </td>
                   <td><%= attendance.text_field :note, class: "form-control" %></td>
@@ -45,8 +49,8 @@
           </tbody>
         </table>
         <div class="center">
-          <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
-          <%= f.submit "編集を保存する", class: "btn btn-lg btn-default" %>
+          <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default btn-primary" %>
+          <%= f.submit "編集を保存する", class: "btn btn-lg btn-default btn-primary" %>
         </div>
       <% end %>
     </div>

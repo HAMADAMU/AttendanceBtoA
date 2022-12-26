@@ -13,8 +13,8 @@
     </div>
 
     <%= form_with url: import_path, local: true do |f| %>
-      <%= f.file_field :file %>
-      <%= f.submit "CSVをインポート", class: "btn btn-lg btn-primary" %>
+      <%= f.file_field :file , class: "index-file" %>
+      <%= f.submit "CSVをインポート", class: "btn btn-lg btn-primary user-index-btn" %>
     <% end %>
 
 

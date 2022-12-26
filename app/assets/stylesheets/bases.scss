@@ -1,5 +1,18 @@
 #table-bases {
+  th {
+    vertical-align: middle;
+    text-align: center;
+  }
   td {
     vertical-align: middle;
+    text-align: center;
   }
+}
+
+.label-bases {
+  margin-top: 5px;
+}
+
+.btn-bases {
+  margin-top: 10px;
 }
