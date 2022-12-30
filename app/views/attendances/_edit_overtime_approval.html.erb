@@ -36,7 +36,7 @@
                         <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
                         <td><%= l(attendance.end_plan_time, format: :time) %></td>
                         <td><%= l(user.designated_work_end_time, format: :time) %></td>
-                        <td><%= working_times(user.designated_work_end_time, attendance.end_plan_time) %></td>
+                        <td><%= overtime_work(change_work_date(attendance.worked_on, user.designated_work_end_time), attendance.end_plan_time) %></td>
                         <td><%= attendance.overtime_note %></td>
                         <td><%= a.select :overtime_request, [["申請中", "申請中"], ["なし", "なし"], ["承認", "承認"], ["否認", "否認"]] %></td>
                         <td><%= a.check_box :overtime_change %></td>

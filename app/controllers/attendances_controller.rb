@@ -23,7 +23,6 @@ class AttendancesController < ApplicationController
         flash[:info] = "お疲れさまでした。"
       else
         flash[:danger] = UPDATE_ERROR_MSG
-        debugger
       end
     end
     redirect_to @user
@@ -36,7 +35,15 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        if item[:attendance_next_day] ==true
+        if item[:started_at].present?
+          item[:started_at] = change_work_date(attendance.worked_on, item[:started_at].to_time)
+        end
+        if item[:finished_at].present?
+          if item[:attendance_next_day] == "1"
+            item[:finished_at] = change_work_date(attendance.worked_on, item[:finished_at].to_time) + 86400
+          else
+            item[:finished_at] = change_work_date(attendance.worked_on, item[:finished_at].to_time)
+          end
         end
         attendance.attributes = item
         if item[:edit_approval_superior].present?
@@ -62,7 +69,16 @@ class AttendancesController < ApplicationController
     @user = User.find_by(id: params[:user_id])
     if overtime_params[:end_plan_time].present? && overtime_params[:overtime_superior].present?
       @attendance = @user.attendances.find(params[:id])
-      if @attendance.update_attributes(overtime_params)
+      if overtime_params[:overtime_next_day] == "1"
+        end_time = change_work_date(@attendance.worked_on, overtime_params[:end_plan_time].to_time) + 86400
+      else
+        end_time = change_work_date(@attendance.worked_on, overtime_params[:end_plan_time].to_time)
+      end
+      @attendance.end_plan_time = end_time
+      @attendance.overtime_next_day = overtime_params[:overtime_next_day]
+      @attendance.overtime_note = overtime_params[:overtime_note]
+      @attendance.overtime_superior = overtime_params[:overtime_superior]
+      if @attendance.save(context: :update_overtime)
         @attendance.overtime_request = "申請中"
         @attendance.save
         flash[:success] = "残業申請しました。"
@@ -197,5 +213,16 @@ class AttendancesController < ApplicationController
 
     def onemonth_approval_params
       params.require(:user).permit(attendances: [:onemonth_approval_request, :onemonth_approval_change])[:attendances]
+    end
+
+    def change_work_date(work_date, work_time)
+      Time.new( work_date.year,
+                work_date.month,
+                work_date.day,
+                work_time.hour,
+                work_time.min,
+                work_time.sec,
+                "+09:00"
+              )
     end
 end

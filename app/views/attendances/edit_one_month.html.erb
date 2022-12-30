@@ -34,11 +34,7 @@
                   <td><%= attendance.check_box :attendance_next_day %></td>
                   <td>
                     <% if day.started_at.present? && day.finished_at.present? %>
-                      <% if day.attendance_next_day == true %>
-                        <%= format("%.2f", working_times(day.started_at, day.finished_at).to_f + 24.0) %>
-                      <% else %>
-                        <%= working_times(day.started_at, day.finished_at) %>
-                      <% end %>
+                      <%= working_times(day.started_at, day.finished_at) %>
                     <% end %>
                   </td>
                   <td><%= attendance.text_field :note, class: "form-control" %></td>

@@ -3,6 +3,7 @@ ja:
     models:
       user: ユーザー
       attendance: 勤怠
+      base: 拠点
     attributes:
         user:
           id: ID
@@ -11,6 +12,11 @@ ja:
           affiliation: 所属
           basic_work_time: 基本時間
           designated_work_start_time: 指定勤務開始時間
+          designated_work_end_time: 指定勤務終了時間
+          employee_number: 社員番号
+          uid: カードID
+          admin: 管理者
+          superior: 上長
           password: パスワード
           password_confirmation: パスワード再入力
           created_at: 作成日
@@ -21,3 +27,25 @@ ja:
           finished_at: 退勤時間
           note: 備考
           user_id: ユーザーID
+          created_at: 作成日
+          updated_at: 更新日
+          end_plan_time: 終了予定時間
+          overtime_next_day: 翌日
+          overtime_note: 備考
+          overtime_superior: 上長
+          overtime_request: 指示者確認
+          overtime_change: 変更
+          edit_approval_superior: 上長
+          attendance_edit_request: 指示者確認
+          original_started_at: 変更前出社
+          original_finished_at: 変更前退社
+          attendance_edit_change: 変更
+          attendance_next_day: 翌日
+          edit_approval_day: 承認日
+          onemonth_approval_request: 指示者確認
+          onemonth_approval_superior: 上長
+          onemonth_approval_change: 変更
+        base:
+          number: 拠点番号
+          name: 拠点名
+          attend: 拠点種類

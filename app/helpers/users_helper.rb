@@ -10,4 +10,15 @@ module UsersHelper
     end
     return overtime
   end
+
+  def change_work_date(work_date, work_time)
+    Time.new( work_date.year,
+              work_date.month,
+              work_date.day,
+              work_time.hour,
+              work_time.min,
+              work_time.sec,
+              "+09:00"
+            )
+  end
 end

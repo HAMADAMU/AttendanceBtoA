@@ -130,25 +130,31 @@
           </td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <% if day.attendance_next_day == true %>
-                <%= str_times = format("%.2f", working_times(day.started_at, day.finished_at).to_f + 24.0) %>
-              <% else %>
-                <%= str_times = working_times(day.started_at, day.finished_at) %>
-              <% end %>
+              <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_times = @total_times.to_f + str_times.to_f %>
             <% end %>
           </td>
           <td><%= day.note %></td>
           <td><%= day.end_plan_time.hour if day.end_plan_time.present? %></td>
           <td><%= day.end_plan_time.min if day.end_plan_time.present? %></td>
-          <td><%= overtime_work(@user.designated_work_end_time, day.end_plan_time) if day.end_plan_time.present? %></td>
+          <td><%= overtime_work(change_work_date(day.worked_on, @user.designated_work_end_time), day.end_plan_time) if day.end_plan_time.present? %></td>
           <td><%= day.overtime_note if day.overtime_note.present? %></td>
           <td>
             <% if day.overtime_request.present? && (day.overtime_request != "なし") %>
+              <% if day.overtime_request == "申請中" %>
+                <%= day.overtime_superior %>へ
+              <% else %>
+                <%= day.overtime_superior %>より
+              <% end %>
               残業<%= day.overtime_request %>
             <% end %>
             <br>
             <% if day.attendance_edit_request.present? && (day.attendance_edit_request != "なし") %>
+              <% if day.attendance_edit_request == "申請中" %>
+                <%= day.edit_approval_superior %>へ
+              <% else %>
+                <%= day.edit_approval_superior %>より
+              <% end %>
               勤怠編集<%= day.attendance_edit_request %>
             <% end %>
           </td>

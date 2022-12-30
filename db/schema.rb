@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20221221175914) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.time "end_plan_time"
+    t.datetime "end_plan_time"
     t.boolean "overtime_next_day"
     t.string "overtime_note"
     t.string "overtime_request"
